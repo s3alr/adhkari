@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>أذكاري | أذكار الصباح والمساء</title>
+<meta name="description" content="موقع أذكاري لأذكار الصباح والمساء مع مسبحة وملاحظات خاصة بكل مستخدم">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&family=Cairo:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --primary: #059669;
+    --primary-dark: #047857;
+    --indigo: #1e3a8a;
+    --indigo-light: #3b5d99;
+    --bg: #f8fafc;
+    --card: #ffffff;
+    --text: #0f172a;
+    --muted: #64748b;
+    --border: #e2e8f0;
+    --success: #10b981;
+    --warning: #f59e0b;
+    --danger: #ef4444;
+    --radius: 20px;
+    --shadow: 0 20px 40px -12px rgba(2, 6, 23, 0.12);
+    --shadow-sm: 0 4px 12px -6px rgba(2, 6, 23, 0.08);
+    --font-main: 'Tajawal', 'Cairo', 'Segoe UI', Tahoma, Arial, sans-serif;
+  }
+  *{ box-sizing:border-box; margin:0; padding:0; }
+  html{ scroll-behavior:smooth; }
+  body{
+    font-family: var(--font-main);
+    direction: rtl;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+    min-height: 100vh;
+  }
+  a{ color:inherit; text-decoration:none; }
+  ul{ list-style:none; }
+  button{
+    font-family: inherit;
+    cursor: pointer;
+    border: none;
+    background: none;
+    border-radius: 12px;
+  }
+  .container{max-width: 1024px; margin: 0 auto; padding: 0 1.5rem;}
+
+  /* ---------- Navbar ---------- */
+  .navbar{
+    position: sticky; top: 0;
+    background: rgba(255,255,255,0.82);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    z-index: 100;
+  }
+  .navbar .inner{
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0.9rem 1.5rem;
+  }
+  .brand{ display:flex; align-items:center; gap:0.6rem; font-weight:800; font-size:1.45rem; color:var(--primary); letter-spacing:-0.5px;}
+  .brand .mark{
+    width:34px; height:34px; border-radius:10px; background:var(--primary);
+    display:grid; place-items:center; color:#fff; font-weight:800; font-size:1.25rem;
+  }
+  .nav-links{ display:flex; gap:1.1rem; align-items:center; }
+  .nav-links a{ color:var(--muted); font-weight:600; font-size:0.98rem; padding:0.5rem 0.9rem; border-radius:10px; transition:0.2s;}
+  .nav-links a:hover, .nav-links a.active{ color:var(--primary); background:rgba(5,150,105,0.08); }
+  .nav-user{ display:flex; align-items:center; gap:0.75rem; }
+  .user-badge{
+    background:var(--indigo); color:#fff; font-weight:700; padding:0.45rem 1rem;
+    border-radius:30px; font-size:0.9rem; white-space:nowrap;
+  }
+  .btn-logout{
+    background:var(--danger); color:#fff; font-weight:700; padding:0.5rem 1rem; border-radius:10px; font-size:0.9rem;
+  }
+
+  /* ---------- Auth ---------- */
+  .auth-wrap{
+    min-height: 100vh; display:flex; align-items:center; justify-content:center;
+    background: linear-gradient(135deg, #e0f2f1 0%, #d7e3f4 100%);
+    padding: 1rem;
+  }
+  .auth-card{
+    background:var(--card); border-radius: var(--radius);
+    box-shadow: var(--shadow); width:100%; max-width: 440px; padding: 2.5rem 2rem;
+  }
+  .auth-header{ text-align:center; margin-bottom: 1.7rem;}
+  .auth-header h2{ color:var(--indigo); font-weight:800; font-size:1.75rem; margin-bottom:0.35rem;}
+  .auth-header p{ color:var(--muted); font-size:0.95rem;}
+  .auth-tabs{ display:flex; gap:0.3rem; margin-bottom:1.5rem; background:#f1f5f9; border-radius:12px; padding:4px;}
+  .auth-tab{
+    flex:1; padding:0.75rem; border-radius:10px; font-weight:700; font-size:0.95rem;
+    color:var(--muted); transition:0.25s; border:none; background:transparent;
+  }
+  .auth-tab.active{ background:var(--card); color:var(--primary); box-shadow:var(--shadow-sm);}
+  .form-group{ margin-bottom:1.15rem; text-align:right;}
+  .form-group label{ display:block; font-weight:700; font-size:0.92rem; color:var(--text); margin-bottom:0.4rem;}
+  .form-group input{
+    width:100%; padding:0.75rem 0.9rem; border:1.5px solid var(--border);
+    border-radius:10px; font-family:inherit; font-size:1rem; outline:none; transition:0.2s;
+  }
+  .form-group input:focus{ border-color:var(--primary); box-shadow:0 0 0 4px rgba(5,150,105,0.12);}
+  .btn-primary{
+    width:100%; background:var(--primary); color:#fff; font-weight:800; font-size:1rem;
+    padding:0.85rem; border-radius:10px; transition:0.2s; margin-top:0.3rem;
+  }
+  .btn-primary:hover{ background:var(--primary-dark); transform:translateY(-1px);}
+  .btn-outline{
+    width:100%; background:#fff; color:var(--indigo); font-weight:700; font-size:0.95rem;
+    padding:0.75rem; border:1.5px solid var(--border); border-radius:10px; transition:0.2s; margin-top:0.6rem;
+  }
+  .btn-outline:hover{ border-color:var(--primary); color:var(--primary);}
+  .auth-footer{ margin-top:1.2rem; text-align:center; color:var(--muted); font-size:0.9rem;}
+  .auth-footer a{ color:var(--primary); font-weight:700;}
+  .msg{ margin-bottom:1rem; padding:0.75rem 1rem; border-radius:10px; font-size:0.92rem; font-weight:600; text-align:center; display:none;}
+  .msg.error{ background:#fef2f2; color:#b91c1c; border:1px solid #fecaca;}
+  .msg.success{ background:#f0fdf4; color:#15803d; border:1px solid #bbf7d0;}
+
+  /* ---------- App ---------- */
+  .app{ display:none; }
+  .app-top{ display:flex; align-items:center; justify-content:space-between; padding:1rem 0 0.5rem; flex-wrap:wrap; gap:1rem;}
+  .welcome{ flex:1; min-width:220px;}
+  .welcome h1{ font-weight:800; font-size:1.5rem; color:var(--indigo); margin-bottom:0.2rem;}
+  .welcome span{ color:var(--muted); font-size:0.95rem;}
+  .today-badge{
+    background:rgba(5,150,105,0.1); color:var(--primary-dark); font-weight:800; font-size:0.8rem;
+    padding:0.25rem 0.7rem; border-radius:20px; display:inline-block; margin-top:0.35rem;
+  }
+
+  .grid{ display:grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap:1.2rem; margin-top:1rem;}
+  .card{
+    background:var(--card); border-radius: var(--radius); border:1px solid var(--border);
+    box-shadow: var(--shadow-sm); overflow:hidden; transition: transform .2s, box-shadow .2s;
+  }
+  .card:hover{ transform: translateY(-4px); box-shadow:var(--shadow);}
+  .card-head{
+    padding:1.1rem 1.2rem; border-bottom:1px solid var(--border); background:#f8fafc;
+    display:flex; align-items:center; justify-content:space-between;
+  }
+  .card-head h3{ font-weight:800; font-size:1.05rem; color:var(--indigo); display:flex; align-items:center; gap:0.5rem;}
+  .card-body{ padding:1.1rem 1.2rem; }
+
+  .adhk-list{ display:flex; flex-direction:column; gap:0.6rem;}
+  .adhk-item{
+    display:flex; align-items:center; gap:0.75rem; padding:0.6rem 0.8rem;
+    border-radius:10px; border:1px solid var(--border); background:#fff;
+    transition:0.2s; font-size:0.95rem;
+  }
+  .adhk-item:hover{ border-color:var(--primary); background:#f0fdfa;}
+  .adhk-item.done{ border-color:var(--success); background:#f0fdf4;}
+  .adhk-item input{ width:20px; height:20px; accent-color:var(--primary); flex-shrink:0;}
+  .adhk-text{ flex:1; }
+  .adhk-count{
+    font-size:0.78rem; font-weight:800; background:#e2e8f0; color:var(--indigo);
+    padding:0.1rem 0.5rem; border-radius:8px; margin-left:0.4rem;
+  }
+  .adhk-item.done .adhk-count{ background:#bbf7d0; color:#15803d;}
+  .adhk-cap{ font-size:0.78rem; color:var(--muted); margin-top:0.5rem; text-align:right; line-height:1.5;}
+  .empty-state{ text-align:center; color:var(--muted); padding:2rem; font-size:0.95rem;}
+
+  /* ---------- Tasbih ---------- */
+  .tasbih-wrap{ display:flex; flex-direction:column; align-items:center; gap:1rem; padding:1.5rem 1.2rem 2rem;}
+  .tasbih-circle{
+    position:relative; width:220px; height:220px; border-radius:50%;
+    background:#fff; border:1px solid var(--border); box-shadow:var(--shadow-sm);
+    display:grid; place-items:center; margin-bottom:0.2rem;
+  }
+  .tasbih-count{
+    font-weight:800; font-size:3rem; color:var(--indigo); line-height:1;
+  }
+  .tasbih-label{ color:var(--muted); font-size:0.85rem; font-weight:700; margin-top:0.2rem;}
+  .beads{ position:absolute; inset:0; display:flex; justify-content:center; align-items:center; pointer-events:none;}
+  .bead{
+    position:absolute; width:10px; height:10px; border-radius:50%; background:#cbd5e1; pointer-events:all; cursor:pointer;
+    border:1.5px solid #fff; box-shadow:0 2px 4px rgba(0,0,0,0.12); transition:transform .15s, background .2s;
+  }
+  .bead.active{ background:var(--primary); transform:scale(1.35); box-shadow:0 0 0 4px rgba(5,150,105,0.35);}
+  .bead:hover{ transform:scale(1.15);}
+  .tasbih-controls{ display:flex; gap:0.7rem; width:100%; max-width:320px; justify-content:center; margin-top:0.5rem;}
+  .tasbih-btn{
+    flex:1; font-weight:800; font-size:1.05rem; padding:0.95rem; border-radius:12px;
+    background:var(--primary); color:#fff; transition:0.2s; box-shadow:0 6px 16px -4px rgba(5,150,105,0.35);
+  }
+  .tasbih-btn:active{ transform:scale(0.96);}
+  .tasbih-btn.secondary{ background:#fff; color:var(--indigo); border:1.5px solid var(--border); box-shadow:none;}
+  .target-row{ margin-top:0.9rem; text-align:center; font-size:0.85rem; color:var(--muted);}
+  .target-row input{ width:70px; padding:0.35rem; text-align:center; border:1px solid var(--border); border-radius:8px; font-family:inherit;}
+  .celebration{ position:fixed; inset:0; display:none; align-items:center; justify-content:center;
+    font-weight:800; font-size:2.2rem; color:var(--success); z-index:60; background:rgba(255,255,255,0.85);
+    backdrop-filter: blur(6px); border-radius:0;}
+  .celebration.show{ display:flex;}
+
+  /* ---------- Notes ---------- */
+  .notes-wrap{ padding:1.5rem 1.2rem 2rem; }
+  .notes-textarea{
+    width:100%; min-height:260px; padding:1rem; border:1.5px solid var(--border);
+    border-radius:14px; font-family:inherit; font-size:1rem; color:var(--text);
+    resize:vertical; outline:none; transition:0.2s;
+  }
+  .notes-textarea:focus{ border-color:var(--primary);}
+  .notes-actions{ display:flex; gap:0.7rem; margin-top:0.9rem; justify-content:flex-end;}
+  .notes-count{ margin-top:0.6rem; text-align:right; font-size:0.82rem; color:var(--muted);}
+
+  /* ---------- Completed banner ---------- */
+  .done-banner{
+    background:linear-gradient(135deg, var(--primary), var(--primary-dark));
+    color:#fff; border-radius:14px; padding:1rem 1.2rem; margin-top:1rem;
+    display:none; align-items:center; gap:0.8rem; font-weight:800; font-size:1rem;
+  }
+  .done-banner.show{ display:flex;}
+
+  /* ---------- Footer ---------- */
+  footer{ text-align:center; padding:2rem 1rem; color:var(--muted); font-size:0.85rem; border-top:1px solid var(--border);}
+
+  @media (max-width: 640px){
+    .navbar .inner{ flex-wrap:wrap; gap:0.6rem; padding:0.75rem 1rem;}
+    .nav-links{ display:none;}
+    .brand{ font-size:1.2rem;}
+    .auth-card{ padding:1.8rem 1.2rem;}
+    .tasbih-count{ font-size:2.2rem;}
+    .tasbih-circle{ width:170px; height:170px;}
+  }
+</style>
+</head>
+<body>
+
+<!-- ===================== AUTH ===================== -->
+<div id="authView" class="auth-wrap">
+  <div class="auth-card">
+    <div class="auth-header">
+      <h2>أهلاً في <span style="color:var(--primary)">أذكاري</span></h2>
+      <p>سجّل دخولك أو أنشئ حساباً لتبدأ ذكر صباحك ومساءك</p>
+    </div>
+    <div id="msg" class="msg error"></div>
+    <div class="auth-tabs">
+      <button class="auth-tab active" onclick="switchAuthTab('login')">تسجيل دخول</button>
+      <button class="auth-tab" onclick="switchAuthTab('signup')">إنشاء حساب</button>
+    </div>
+    <form id="authForm" onsubmit="handleAuth(event)">
+      <div class="form-group">
+        <label for="email">البريد الإلكتروني</label>
+        <input type="email" id="email" placeholder="example@email.com" required autocomplete="email">
+      </div>
+      <div class="form-group">
+        <label for="password">كلمة المرور</label>
+        <input type="password" id="password" placeholder="••••••••" required autocomplete="current-password">
+      </div>
+      <button type="submit" id="authSubmit" class="btn-primary">تسجيل الدخول</button>
+      <button type="button" class="btn-outline" onclick="switchAuthTab('signup')">ليس لديك حساب؟ أنشئ حساباً جديداً</button>
+    </form>
+    <div class="auth-footer">
+      بياناتك محفوظة في متصفحك فقط (<strong>localStorage</strong>) ولا يمكن لأي مستخدم آخر الوصول إليها.
+    </div>
+  </div>
+</div>
+
+<!-- ===================== APP ===================== -->
+<div id="appView" class="app">
+  <nav class="navbar">
+    <div class="inner">
+      <div class="brand"><div class="mark">🤲</div>أذكاري</div>
+      <div class="nav-links">
+        <a href="#section-morning" class="nav-link" onclick="showSection('morning')">الصباح</a>
+        <a href="#section-evening" class="nav-link" onclick="showSection('evening')">المساء</a>
+        <a href="#section-tasbih" class="nav-link active" onclick="showSection('tasbih')">المسبحة</a>
+        <a href="#section-notes" class="nav-link" onclick="showSection('notes')">ملاحظاتي</a>
+      </div>
+      <div class="nav-user">
+        <div class="user-badge" id="userBadge">المستخدم</div>
+        <button class="btn-logout" onclick="logout()">تسجيل الخروج</button>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container">
+    <div class="app-top">
+      <div class="welcome">
+        <h1>نورت الموقع <span id="userName">صديقي</span> ☀️</h1>
+        <span class="today-badge" id="todayBadge">التاريخ: <span id="todayDate"></span></span>
+      </div>
+    </div>
+
+    <!-- Morning -->
+    <section id="section-morning" class="card" style="display:none;">
+      <div class="card-head">
+        <h3>🌅 أذكار الصباح</h3>
+        <span id="morningProgress">0 / 0</span>
+      </div>
+      <div class="card-body">
+        <div class="adhk-list" id="morningList"></div>
+        <div class="adhk-cap">الأذكار من كتاب «حصن المسلم». pond في كل صباح만에.</div>
+        <div class="done-banner" id="morningDone">✅ أكملت أذكار الصباح! يمكنك الآن استخدام المسبحة.</div>
+      </div>
+    </section>
+
+    <!-- Evening -->
+    <section id="section-evening" class="card" style="display:none;">
+      <div class="card-head">
+        <h3>🌙 أذكار المساء</h3>
+        <span id="eveningProgress">0 / 0</span>
+      </div>
+      <div class="card-body">
+        <div class="adhk-list" id="eveningList"></div>
+        <div class="adhk-cap">الأذكار من كتاب «حصن المسلم».</div>
+        <div class="done-banner" id="eveningDone">✅ أكملت أذكار المساء! يمكنك الآن استخدام المسبحة.</div>
+      </div>
+    </section>
+
+    <!-- Tasbih -->
+    <section id="section-tasbih" class="card" style="display:none;">
+      <div class="card-head">
+        <h3>📿 المسبحة الإلكترونية</h3>
+        <span id="tasbihTargetBadge">الهدف: 33</span>
+      </div>
+      <div class="tasbih-wrap">
+        <div class="tasbih-circle">
+          <div class="beads" id="beads"></div>
+          <div>
+            <div class="tasbih-count" id="tasbihCount">0</div>
+            <div class="tasbih-label">عدة التسبيح</div>
+          </div>
+        </div>
+        <div class="tasbih-controls">
+          <button class="tasbih-btn secondary" onclick="tasbihChange(-1)">−</button>
+          <button class="tasbih-btn" onclick="tasbihChange(1)">+</button>
+          <button class="tasbih-btn secondary" onclick="tasbihReset()">إعادة تعيين</button>
+        </div>
+        <div class="target-row">
+          الهدف: <input type="number" id="tasbihTarget" value="33" min="1" onchange="saveTasbihTarget()">
+        </div>
+        <div class="celebration" id="celebration">مبارك! بلغت هدفك 🎉</div>
+      </div>
+    </section>
+
+    <!-- Notes -->
+    <section id="section-notes" class="card" style="display:none;">
+      <div class="card-head">
+        <h3>📝 ملاحظاتي</h3>
+        <span>خاصة بك فقط</span>
+      </div>
+      <div class="notes-wrap">
+        <textarea id="notes" class="notes-textarea" placeholder="اكتب ملاحظاتك الشخصية هنا..."></textarea>
+        <div class="notes-actions">
+          <button class="btn-primary" onclick="saveNotes()">حفظ الملاحظات</button>
+        </div>
+        <div class="notes-count" id="notesCount">0 حرف</div>
+      </div>
+    </section>
+  </div>
+
+  <footer>
+    موقع <strong>أذكاري</strong> — أذكار الصباح والمساء، مسبحة، وملاحظات خاصة. كل بياناتك محفوظة في متصفحك فقط.
+  </footer>
+</div>
+
+<script>
+  /* ================= CONFIG & STORAGE ================= */
+  const USERS_KEY = 'adhkari_users';
+  const CURRENT_KEY = 'adhkari_currentUser';
+
+  let users = JSON.parse(localStorage.getItem(USERS_KEY) || '{}');
+  let currentUser = localStorage.getItem(CURRENT_KEY) || null;
+  let userData = null;
+
+  const TODAY = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
+
+  const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+  const todayStr = new Date().toLocaleDateString('ar-SA', options);
+
+  /* ================= ADHKAR DATA (authentic, from Fortress of the Muslim) ================= */
+  const ADHKAR = {
+    morning: [
+      { id: 'm1', text: 'أَصْبَحْنَا وَأَصْبَحَ الْمُلْكُ لِلَّهِ رَبِّ الْعَالَمِينَ، اللَّهُمَّ إِنِّي أَسْأَلُكَ خَيْرَ هَذَا الْيَوْمِ وَفَتْحَهُ وَنَصْرَهُ وَنُورَهُ وَبَرَكَتَهُ وَهُدَاهُ، وَأَعُوذُ بِكَ مِنْ شَرِّ مَا فِيهِ وَشَرِّ مَا بَعْدَهُ', count: null },
+      { id: 'm2', text: 'لَا إِلَٰهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ', count: 10 },
+      { id: 'm3', text: 'اللَّهُمَّ بِكَ أَصْبَحْنَا وَبِكَ أَمْسَيْنَا، وَبِكَ نَحْيَا وَبِكَ نَمُوتُ وَإِلَيْكَ الْمَصِيرُ', count: null },
+      { id: 'm4', text: 'اللَّهُمَّ مَا أَصْبَحَ بِي مِنْ نِعْمَةٍ أَوْ بِأَحَدٍ مِنْ خَلْقِكَ فَمِنْكَ وَحْدَكَ لَا شَرِيكَ لَكَ، فَلَكَ الْحَمْدُ وَلَكَ الشُّكْرُ', count: null },
+      { id: 'm5', text: 'رَضِيتُ بِاللَّهِ رَبًّا وَبِالْإِسْلَامِ دِينًا وَبِمُحَمَّدٍ نَبِيًّا', count: 3 },
+      { id: 'm6', text: 'اللَّهُمَّ عَافِنِي فِي بَدَنِي، اللَّهُمَّ عَافِنِي فِي سَمْعِي، اللَّهُمَّ عَافِنِي فِي بَصَرِي، لَا إِلَٰهَ إِلَّا أَنْتَ', count: 3 },
+      { id: 'm7', text: 'اللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنَ الْهَمِّ وَالْحَزَنِ، وَأَعُوذُ بِكَ مِنَ الْعَجْزِ وَالْكَسَلِ، وَأَعُوذُ بِكَ مِنَ الْبُخْلِ وَالْجُبْنِ، وَأَعُوذُ بِكَ مِنْ غَلَبَةِ الدَّيْنِ وَقَهْرِ الرِّجَال', count: null },
+      { id: 'm8', text: 'بِسْمِ اللَّهِ الَّذِي لَا يَضُرُّ مَعَ اسْمِهِ شَيْءٌ فِي الْأَرْضِ وَلَا فِي السَّمَاءِ وَهُوَ السَّمِيعُ الْعَلِيمُ', count: 3 },
+      { id: 'm9', text: 'آيَةُ الْكُرْسِي: اللَّهُ لَا إِلَٰهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ...', count: 1 },
+      { id: 'm10', text: 'قُلْ هُوَ اللَّهُ أَحَدٌ', count: 3 },
+      { id: 'm11', text: 'قُلْ أَعُوذُ بِرَبِّ الْفَلَقِ', count: 3 },
+      { id: 'm12', text: 'قُلْ أَعُوذُ بِرَبِّ النَّاسِ', count: 3 },
+    ],
+    evening: [
+      { id: 'e1', text: 'أَمْسَيْنَا وَأَمْسَى الْمُلْكُ لِلَّهِ رَبِّ الْعَالَمِينَ، اللَّهُمَّ إِنِّي أَسْأَلُكَ خَيْرَ هَذِهِ اللَّيْلَةِ وَفَتْحَهَا وَنَصْرَهَا وَنُورَهَا وَبَرَكَتَهَا وَهُدَاهَا، وَأَعُوذُ بِكَ مِنْ شَرِّ مَا فِيهَا وَشَرِّ مَا بَعْدَهَا', count: null },
+      { id: 'e2', text: 'لَا إِلَٰهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ', count: 10 },
+      { id: 'e3', text: 'اللَّهُمَّ بِكَ أَمْسَيْنَا وَبِكَ نَصْبَحْنَا، وَبِكَ نَحْيَا وَبِكَ نَمُوتُ وَإِلَيْكَ الْمَصِيرُ', count: null },
+      { id: 'e4', text: 'اللَّهُمَّ مَا أَمْسَى بِي مِنْ نِعْمَةٍ أَوْ بِأَحَدٍ مِنْ خَلْقِكَ فَمِنْكَ وَحْدَكَ لَا شَرِيكَ لَكَ، فَلَكَ الْحَمْدُ وَلَكَ الشُّكْرُ', count: null },
+      { id: 'e5', text: 'رَضِيتُ بِاللَّهِ رَبًّا وَبِالْإِسْلَامِ دِينًا وَبِمُحَمَّدٍ نَبِيًّا', count: 3 },
+      { id: 'e6', text: 'اللَّهُمَّ عَافِنِي فِي بَدَنِي، اللَّهُمَّ عَافِنِي فِي سَمْعِي، اللَّهُمَّ عَافِنِي فِي بَصَرِي، لَا إِلَٰهَ إِلَّا أَنْتَ', count: 3 },
+      { id: 'e7', text: 'اللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنَ الْهَمِّ وَالْحَزَنِ، وَأَعُوذُ بِكَ مِنَ الْعَجْزِ وَالْكَسَلِ، وَأَعُوذُ بِكَ مِنَ الْبُخْلِ وَالْجُبْنِ، وَأَعُوذُ بِكَ مِنْ غَلَبَةِ الدَّيْنِ وَقَهْرِ الرِّجَال', count: null },
+      { id: 'e8', text: 'بِسْمِ اللَّهِ الَّذِي لَا يَضُرُّ مَعَ اسْمِهِ شَيْءٌ فِي الْأَرْضِ وَلَا فِي السَّمَاءِ وَهُوَ السَّمِيعُ الْعَلِيمُ', count: 3 },
+      { id: 'e9', text: 'آيَةُ الْكُرْسِي: اللَّهُ لَا إِلَٰهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ...', count: 1 },
+      { id: 'e10', text: 'قُلْ هُوَ اللَّهُ أَحَدٌ', count: 3 },
+      { id: 'e11', text: 'قُلْ أَعُوذُ بِرَبِّ الْفَلَقِ', count: 3 },
+      { id: 'e12', text: 'قُلْ أَعُوذُ بِرَبِّ النَّاسِ', count: 3 },
+    ]
+  };
+
+  /* ================= INIT ================= */
+  function init(){
+    if(currentUser && users[currentUser]){
+      userData = loadUserData(currentUser);
+      document.getElementById('authView').style.display = 'none';
+      document.getElementById('appView').style.display = 'block';
+      renderApp();
+    } else {
+      document.getElementById('authView').style.display = 'flex';
+      document.getElementById('appView').style.display = 'none';
+    }
+    document.getElementById('todayDate').textContent = todayStr;
+  }
+
+  function loadUserData(email){
+    let d = JSON.parse(localStorage.getItem('adhkari_' + email) || '{}');
+    if(!d.tasbih) d.tasbih = 0;
+    if(!d.notes) d.notes = '';
+    if(!d.adhkar) d.adhkar = {};
+    if(!d.adhkar.morning) d.adhkar.morning = { date:'', doneItems:{}, completed:false };
+    if(!d.adhkar.evening) d.adhkar.evening = { date:'', doneItems:{}, completed:false };
+    resetDayIfNeeded(d.adhkar.morning);
+    resetDayIfNeeded(d.adhkar.evening);
+    return d;
+  }
+  function resetDayIfNeeded(session){
+    if(session.date !== TODAY){
+      session.date = TODAY;
+      session.doneItems = {};
+      session.completed = false;
+    }
+  }
+  function saveUsers(){ localStorage.setItem(USERS_KEY, JSON.stringify(users)); }
+  function saveUserData(){ localStorage.setItem('adhkari_' + currentUser, JSON.stringify(userData)); }
+
+  /* ================= AUTH ================= */
+  function switchAuthTab(tab){
+    const form = document.getElementById('authForm');
+    const submit = document.getElementById('authSubmit');
+    const tabs = document.querySelectorAll('.auth-tab');
+    const altBtn = form.querySelector('.btn-outline');
+    tabs.forEach(t => t.classList.remove('active'));
+    tabs[tab === 'login' ? 0 : 1].classList.add('active');
+    if(tab === 'login'){
+      tabs[0].classList.add('active');
+      submit.textContent = 'تسجيل الدخول';
+      altBtn.textContent = 'ليس لديك حساب؟ أنشئ حساباً جديداً';
+      altBtn.onclick = () => switchAuthTab('signup');
+      form.onsubmit = handleAuth;
+    } else {
+      tabs[1].classList.add('active');
+      submit.textContent = 'إنشاء حساب';
+      altBtn.textContent = 'لديك حساب بالفعل؟ تسجيل الدخول';
+      altBtn.onclick = () => switchAuthTab('login');
+      form.onsubmit = handleAuth;
+    }
+    hideMsg();
+  }
+  // Make switchAuthTab callable without event
+  window.switchAuthTab = switchAuthTab;
+
+  function handleAuth(e){
+    e.preventDefault();
+    const email = document.getElementById('email').value.trim().toLowerCase();
+    const password = document.getElementById('password').value;
+    const isSignup = document.getElementById('authSubmit').textContent.includes('إنشاء');
+    const msg = document.getElementById('msg');
+
+    if(!email || !password){ showMsg('الرجاء إدخال البريد الإلكتروني وكلمة المرور', 'error'); return; }
+
+    if(isSignup){
+      if(users[email]){ showMsg('هذا البريد الإلكتروني مسجل بالفعل', 'error'); return; }
+      users[email] = { password, createdAt: new Date().toISOString() };
+      saveUsers();
+      currentUser = email;
+      localStorage.setItem(CURRENT_KEY, currentUser);
+      userData = loadUserData(currentUser);
+      showMsg('تم إنشاء حسابك بنجاح! جاري التوجيه...', 'success');
+      setTimeout(()=>{ document.getElementById('authView').style.display='none'; document.getElementById('appView').style.display='block'; renderApp(); }, 800);
+    } else {
+      if(!users[email] || users[email].password !== password){ showMsg('البريد الإلكتروني أو كلمة المرور غير صحيحة', 'error'); return; }
+      currentUser = email;
+      localStorage.setItem(CURRENT_KEY, currentUser);
+      userData = loadUserData(currentUser);
+      document.getElementById('authView').style.display='none';
+      document.getElementById('appView').style.display='block';
+      renderApp();
+    }
+  }
+  window.handleAuth = handleAuth;
+
+  function showMsg(text, type){
+    const m = document.getElementById('msg');
+    m.textContent = text;
+    m.className = 'msg ' + type;
+    m.style.display = 'block';
+  }
+  function hideMsg(){ document.getElementById('msg').style.display = 'none'; }
+
+  function logout(){
+    currentUser = null;
+    userData = null;
+    localStorage.removeItem(CURRENT_KEY);
+    document.getElementById('appView').style.display = 'none';
+    document.getElementById('authView').style.display = 'flex';
+    document.getElementById('authForm').reset();
+    hideMsg();
+    switchAuthTab('login');
+  }
+
+  /* ================= RENDER APP ================= */
+  function renderApp(){
+    document.getElementById('userBadge').textContent = currentUser;
+    document.getElementById('userName').textContent = currentUser.split('@')[0];
+    document.getElementById('todayDate').textContent = todayStr;
+
+    renderSection('morning');
+    renderSection('evening');
+    renderTasbih();
+    renderNotes();
+
+    showSection('tasbih'); // default view
+  }
+
+  function showSection(section){
+    document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
+    document.querySelectorAll('section[id^="section-"]').forEach(s => s.style.display = 'none');
+    document.getElementById('section-' + section).style.display = 'block';
+    // activate nav link by text mapping
+    const map = {'morning':'الصباح','evening':'المساء','tasbih':'المسبحة','notes':'ملاحظاتي'};
+    document.querySelectorAll('.nav-links a').forEach(a=>{
+      if(a.textContent.trim() === map[section]) a.classList.add('active');
+    });
+  }
+
+  function renderSection(type){
+    const listEl = document.getElementById(type + 'List');
+    const progressEl = document.getElementById(type + 'Progress');
+    const doneBanner = document.getElementById(type + 'Done');
+    const session = userData.adhkar[type];
+    const items = ADHKAR[type];
+    let doneCount = 0;
+
+    listEl.innerHTML = '';
+    items.forEach(it => {
+      const isDone = !!session.doneItems[it.id];
+      if(isDone) doneCount++;
+      const item = document.createElement('div');
+      item.className = 'adhk-item' + (isDone ? ' done' : '');
+      item.innerHTML = `
+        <input type="checkbox" ${isDone ? 'checked' : ''} onchange="toggleAdhk('${type}', '${it.id}')">
+        <div class="adhk-text">${it.text}</div>
+        ${it.count ? `<span class="adhk-count">${it.count}×</span>` : ''}
+      `;
+      listEl.appendChild(item);
+    });
+    progressEl.textContent = doneCount + ' / ' + items.length;
+    session.completed = (doneCount === items.length);
+    doneBanner.className = 'done-banner' + (session.completed ? ' show' : '');
+    saveUserData();
+  }
+
+  function toggleAdhk(type, id){
+    const session = userData.adhkar[type];
+    session.doneItems[id] = !session.doneItems[id];
+    renderSection(type);
+  }
+
+  /* ================= TASBIH ================= */
+  let tasbihTarget = 33;
+  function renderTasbih(){
+    const countEl = document.getElementById('tasbihCount');
+    const targetEl = document.getElementById('tasbihTargetBadge');
+    const targetInput = document.getElementById('tasbihTarget');
+    const beadsEl = document.getElementById('beads');
+    countEl.textContent = userData.tasbih;
+    tasbihTarget = parseInt(targetInput.value) || 33;
+    targetEl.textContent = 'الهدف: ' + tasbihTarget;
+
+    // render beads circle
+    beadsEl.innerHTML = '';
+    const n = tasbihTarget;
+    const radius = 78;
+    for(let i=0; i<n; i++){
+      const angle = (i / n) * 360 - 90;
+      const rad = angle * Math.PI / 180;
+      const x = Math.round(radius * Math.cos(rad));
+      const y = Math.round(radius * Math.sin(rad));
+      const bead = document.createElement('div');
+      bead.className = 'bead' + (i < userData.tasbih ? ' active' : '');
+      bead.style.left = '50%';
+      bead.style.top = '50%';
+      bead.style.transform = `translate(${x}px, ${y}px) translate(-50%, -50%)`;
+      bead.onclick = () => tasbihSet(i + 1);
+      beadsEl.appendChild(bead);
+    }
+
+    if(userData.tasbih >= tasbihTarget && tasbihTarget > 0){
+      document.getElementById('celebration').classList.add('show');
+    } else {
+      document.getElementById('celebration').classList.remove('show');
+    }
+  }
+  function tasbihChange(delta){
+    userData.tasbih = Math.max(0, userData.tasbih + delta);
+    saveUserData();
+    renderTasbih();
+    if(delta > 0) navigator.vibrate && navigator.vibrate(30);
+  }
+  function tasbihSet(val){
+    userData.tasbih = Math.max(0, Math.min(val, tasbihTarget));
+    saveUserData();
+    renderTasbih();
+    navigator.vibrate && navigator.vibrate(30);
+  }
+  function tasbihReset(){
+    userData.tasbih = 0;
+    saveUserData();
+    renderTasbih();
+  }
+  function saveTasbihTarget(){
+    saveUserData();
+    renderTasbih();
+  }
+  window.tasbihChange = tasbihChange;
+  window.tasbihReset = tasbihReset;
+  window.tasbihSet = tasbihSet;
+  window.saveTasbihTarget = saveTasbihTarget;
+
+  /* ================= NOTES ================= */
+  function renderNotes(){
+    const ta = document.getElementById('notes');
+    ta.value = userData.notes || '';
+    document.getElementById('notesCount').textContent = (userData.notes || '').length + ' حرف';
+  }
+  let notesDebounce;
+  document.getElementById('notes').addEventListener('input', (e)=>{
+    userData.notes = e.target.value;
+    document.getElementById('notesCount').textContent = userData.notes.length + ' حرف';
+    clearTimeout(notesDebounce);
+    notesDebounce = setTimeout(saveUserData, 800);
+  });
+  function saveNotes(){
+    saveUserData();
+    const btn = document.querySelector('#section-notes .btn-primary');
+    const old = btn.textContent;
+    btn.textContent = 'تم الحفظ ✅';
+    setTimeout(()=> btn.textContent = old, 1000);
+  }
+
+  /* ================= BOOT ================= */
+  init();
+</script>
+</body>
+</html>
