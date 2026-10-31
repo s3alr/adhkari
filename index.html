@@ -681,14 +681,22 @@
   function loadUserData(email){
     let d = JSON.parse(localStorage.getItem('adhkari_' + email) || '{}');
     if(!d.tasbih) d.tasbih = 0;
-    if(!d.notes) d.notes = { general: '', personal: '', quotes: '', tasks: '' };
+    // هجرة هيكل البيانات من الإصدار القديم (notes كان نصاً، 지금은 كائن)
+    if(!d.notes || typeof d.notes === 'string'){
+      d.notes = { general: d.notes || '', personal: '', quotes: '', tasks: '' };
+    }
     if(!d.notes.general) d.notes.general = '';
     if(!d.notes.personal) d.notes.personal = '';
     if(!d.notes.quotes) d.notes.quotes = '';
     if(!d.notes.tasks) d.notes.tasks = '';
     if(!d.adhkar) d.adhkar = {};
-    if(!d.adhkar.morning) d.adhkar.morning = { date:'', counts:{}, completed:false };
-    if(!d.adhkar.evening) d.adhkar.evening = { date:'', counts:{}, completed:false };
+    // هجرة من doneItems القديمة إلى counts الجديدة
+    if(!d.adhkar.morning || !d.adhkar.morning.counts){
+      d.adhkar.morning = { date:'', counts:{}, completed:false };
+    }
+    if(!d.adhkar.evening || !d.adhkar.evening.counts){
+      d.adhkar.evening = { date:'', counts:{}, completed:false };
+    }
     if(!d.records) d.records = [];
     resetDayIfNeeded(d.adhkar.morning);
     resetDayIfNeeded(d.adhkar.evening);
@@ -778,8 +786,14 @@
 
   /* ================= RENDER APP ================= */
   function renderApp(){
-    document.getElementById('userBadge').textContent = currentUser;
-    document.getElementById('userName').textContent = currentUser.split('@')[0];
+    if(!currentUser || !userData){
+      // إعادة تهيئة البيانات إذا كانت ناقصة
+      if(currentUser){
+        userData = loadUserData(currentUser);
+      }
+    }
+    document.getElementById('userBadge').textContent = currentUser || 'المستخدم';
+    document.getElementById('userName').textContent = (currentUser || 'صديقي').split('@')[0];
 
     renderSection('morning');
     renderSection('evening');
@@ -787,7 +801,7 @@
     renderNotes();
     renderRecord();
 
-    showSection('tasbih');
+    showSection('morning');
   }
 
   function showSection(section){
@@ -817,50 +831,65 @@
   }
 
   function renderSection(type){
-    const listEl = document.getElementById(type + 'List');
-    const progressEl = document.getElementById(type + 'Progress');
-    const doneBanner = document.getElementById(type + 'Done');
-    const session = userData.adhkar[type];
-    const items = ADHKAR[type];
+    try {
+      const listEl = document.getElementById(type + 'List');
+      const progressEl = document.getElementById(type + 'Progress');
+      const doneBanner = document.getElementById(type + 'Done');
+      
+      if(!userData || !userData.adhkar || !userData.adhkar[type]){
+        console.error('User data missing for', type);
+        return;
+      }
+      
+      const session = userData.adhkar[type];
+      const items = ADHKAR[type];
 
-    listEl.innerHTML = '';
-    let completedCount = 0;
-
-    items.forEach(it => {
-      const count = session.counts[it.id] || 0;
-      const isDone = it.target !== null ? count >= it.target : count > 0;
-      if(isDone) completedCount++;
-
-      const item = document.createElement('div');
-      item.className = 'adhk-item' + (isDone ? ' done' : '');
-
-      let targetHtml = '';
-      if(it.target !== null){
-        targetHtml = `
-          <div class="adhk-counter">
-            <button class="adhk-count-btn" onclick="adhkCount('${type}', '${it.id}', -1)">−</button>
-            <span class="adhk-count-display">${count}</span>
-            <button class="adhk-count-btn" onclick="adhkCount('${type}', '${it.id}', 1)">+</button>
-            <span class="adhk-reward">${it.target}×</span>
-          </div>
-        `;
+      if(!listEl || !items){
+        console.error('Missing elements for', type);
+        return;
       }
 
-      item.innerHTML = `
-        <div class="adhk-text">${it.text}</div>
-        ${targetHtml}
-      `;
-      listEl.appendChild(item);
-    });
+      listEl.innerHTML = '';
+      let completedCount = 0;
 
-    progressEl.textContent = completedCount + ' / ' + items.length;
-    const allCompleted = checkSessionCompleted(type);
-    doneBanner.className = 'done-banner' + (allCompleted ? ' show' : '');
-    saveUserData();
+      items.forEach(it => {
+        const count = (session.counts && session.counts[it.id]) || 0;
+        const isDone = it.target !== null ? count >= it.target : count > 0;
+        if(isDone) completedCount++;
 
-    // Add to daily record if any adhkar was done today
-    if(completedCount > 0){
-      addToDailyRecord(type, completedCount);
+        const item = document.createElement('div');
+        item.className = 'adhk-item' + (isDone ? ' done' : '');
+
+        let targetHtml = '';
+        if(it.target !== null){
+          targetHtml = `
+            <div class="adhk-counter">
+              <button class="adhk-count-btn" onclick="adhkCount('${type}', '${it.id}', -1)">−</button>
+              <span class="adhk-count-display">${count}</span>
+              <button class="adhk-count-btn" onclick="adhkCount('${type}', '${it.id}', 1)">+</button>
+              <span class="adhk-reward">${it.target}×</span>
+            </div>
+          `;
+        }
+
+        item.innerHTML = `
+          <div class="adhk-text">${it.text}</div>
+          ${targetHtml}
+        `;
+        listEl.appendChild(item);
+      });
+
+      if(progressEl) progressEl.textContent = completedCount + ' / ' + items.length;
+      const allCompleted = checkSessionCompleted(type);
+      if(doneBanner) doneBanner.className = 'done-banner' + (allCompleted ? ' show' : '');
+      saveUserData();
+
+      // Add to daily record if any adhkar was done today
+      if(completedCount > 0){
+        addToDailyRecord(type, completedCount);
+      }
+    } catch(e){
+      console.error('Error rendering section', type, e);
     }
   }
 
