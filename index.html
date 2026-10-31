@@ -4,16 +4,16 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>أذكاري | أذكار الصباح والمساء</title>
-<meta name="description" content="موقع أذكاري لأذكار الصباح والمساء مع مسبحة وملاحظات خاصة بكل مستخدم">
+<meta name="description" content="موقع أذكاري لأذكار الصباح والمساء مع مسبحة وملاحظات خاصة وسجل أيام">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&family=Cairo:wght@400;600;800&display=swap" rel="stylesheet">
 <style>
   :root{
+    /* Light theme */
     --primary: #059669;
     --primary-dark: #047857;
     --indigo: #1e3a8a;
-    --indigo-light: #3b5d99;
     --bg: #f8fafc;
     --card: #ffffff;
     --text: #0f172a;
@@ -26,7 +26,29 @@
     --shadow: 0 20px 40px -12px rgba(2, 6, 23, 0.12);
     --shadow-sm: 0 4px 12px -6px rgba(2, 6, 23, 0.08);
     --font-main: 'Tajawal', 'Cairo', 'Segoe UI', Tahoma, Arial, sans-serif;
+    --islamic-gold: #c5a059;
+    --islamic-green: #006400;
   }
+
+  /* Dark theme */
+  [data-theme="dark"]{
+    --primary: #34d399;
+    --primary-dark: #10b981;
+    --indigo: #6366f1;
+    --bg: #0f172a;
+    --card: #1e293b;
+    --text: #f8fafc;
+    --muted: #94a3b8;
+    --border: #334155;
+    --success: #4ade80;
+    --warning: #fbbf24;
+    --danger: #f87171;
+    --shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.5);
+    --shadow-sm: 0 4px 12px -6px rgba(0, 0, 0, 0.4);
+    --islamic-gold: #d4af37;
+    --islamic-green: #22c55e;
+  }
+
   *{ box-sizing:border-box; margin:0; padding:0; }
   html{ scroll-behavior:smooth; }
   body{
@@ -36,6 +58,7 @@
     color: var(--text);
     line-height: 1.7;
     min-height: 100vh;
+    transition: background 0.3s, color 0.3s;
   }
   a{ color:inherit; text-decoration:none; }
   ul{ list-style:none; }
@@ -48,13 +71,122 @@
   }
   .container{max-width: 1024px; margin: 0 auto; padding: 0 1.5rem;}
 
+  /* Islamic decorative header */
+  .islamic-header{
+    background: linear-gradient(135deg, var(--islamic-green) 0%, var(--primary) 100%);
+    border-bottom: 3px solid var(--islamic-gold);
+    position: relative;
+    overflow: hidden;
+  }
+  .islamic-header::before{
+    content: "";
+    position: absolute;
+    top: -50%; left: -50%;
+    width: 200%; height: 200%;
+    background-image: radial-gradient(circle, rgba(255,255,255,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    opacity: 0.3;
+    pointer-events: none;
+    z-index: 1;
+  }
+  .islamic-border{
+    position: absolute;
+    inset: 0;
+    border: 2px solid var(--islamic-gold);
+    border-radius: 50%;
+    width: 300px; height: 300px;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    mask-image: radial-gradient(circle, transparent 60%, black 60%);
+    -webkit-mask-image: radial-gradient(circle, transparent 60%, black 60%);
+    opacity: 0.4;
+    z-index: 2;
+    pointer-events: none;
+  }
+  .header-content{
+    position: relative;
+    z-index: 10;
+    text-align: center;
+    padding: 2rem 1rem;
+  }
+  .site-logo{
+    display: inline-flex;
+    align-items: center;
+    gap: 0.8rem;
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: #fff;
+    margin-bottom: 0.5rem;
+  }
+  .site-logo .mark{
+    width: 48px; height: 48px;
+    background: var(--islamic-gold);
+    border-radius: 12px;
+    display: grid; place-items: center;
+    font-size: 1.5rem;
+    color: var(--islamic-green);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  }
+  .site-tagline{
+    color: rgba(255,255,255,0.9);
+    font-size: 1rem;
+  }
+
+  /* Date & Time */
+  .datetime-bar{
+    background: var(--card);
+    border-bottom: 1px solid var(--border);
+    padding: 0.8rem 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.8rem;
+    box-shadow: var(--shadow-sm);
+    z-index: 50;
+  }
+  .datetime-info{
+    text-align: right;
+  }
+  .datetime-date{
+    font-weight: 800;
+    color: var(--primary-dark);
+    font-size: 1.05rem;
+  }
+  .datetime-time{
+    font-family: 'Cairo', monospace;
+    font-weight: 800;
+    font-size: 1.5rem;
+    color: var(--text);
+    margin-top: 0.1rem;
+  }
+  .theme-toggle{
+    background: var(--border);
+    color: var(--text);
+    width: 44px; height: 44px;
+    border-radius: 12px;
+    display: grid; place-items: center;
+    font-size: 1.3rem;
+    transition: 0.3s;
+    box-shadow: var(--shadow-sm);
+  }
+  .theme-toggle:hover{
+    background: var(--primary);
+    color: #fff;
+    transform: rotate(15deg);
+  }
+
   /* ---------- Navbar ---------- */
   .navbar{
     position: sticky; top: 0;
-    background: rgba(255,255,255,0.82);
+    background: rgba(255,255,255,0.85);
     backdrop-filter: blur(12px);
     border-bottom: 1px solid var(--border);
     z-index: 100;
+    transition: background 0.3s;
+  }
+  [data-theme="dark"] .navbar{
+    background: rgba(30, 41, 59, 0.9);
   }
   .navbar .inner{
     display: flex; align-items: center; justify-content: space-between;
@@ -68,6 +200,7 @@
   .nav-links{ display:flex; gap:1.1rem; align-items:center; }
   .nav-links a{ color:var(--muted); font-weight:600; font-size:0.98rem; padding:0.5rem 0.9rem; border-radius:10px; transition:0.2s;}
   .nav-links a:hover, .nav-links a.active{ color:var(--primary); background:rgba(5,150,105,0.08); }
+  [data-theme="dark"] .nav-links a:hover, [data-theme="dark"] .nav-links a.active{ background:rgba(52,211,153,0.15); color:var(--success);}
   .nav-user{ display:flex; align-items:center; gap:0.75rem; }
   .user-badge{
     background:var(--indigo); color:#fff; font-weight:700; padding:0.45rem 1rem;
@@ -82,15 +215,21 @@
     min-height: 100vh; display:flex; align-items:center; justify-content:center;
     background: linear-gradient(135deg, #e0f2f1 0%, #d7e3f4 100%);
     padding: 1rem;
+    transition: background 0.3s;
+  }
+  [data-theme="dark"] .auth-wrap{
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
   }
   .auth-card{
     background:var(--card); border-radius: var(--radius);
     box-shadow: var(--shadow); width:100%; max-width: 440px; padding: 2.5rem 2rem;
+    transition: background 0.3s, color 0.3s;
   }
   .auth-header{ text-align:center; margin-bottom: 1.7rem;}
   .auth-header h2{ color:var(--indigo); font-weight:800; font-size:1.75rem; margin-bottom:0.35rem;}
   .auth-header p{ color:var(--muted); font-size:0.95rem;}
   .auth-tabs{ display:flex; gap:0.3rem; margin-bottom:1.5rem; background:#f1f5f9; border-radius:12px; padding:4px;}
+  [data-theme="dark"] .auth-tabs{ background:#334155; }
   .auth-tab{
     flex:1; padding:0.75rem; border-radius:10px; font-weight:700; font-size:0.95rem;
     color:var(--muted); transition:0.25s; border:none; background:transparent;
@@ -112,12 +251,15 @@
     width:100%; background:#fff; color:var(--indigo); font-weight:700; font-size:0.95rem;
     padding:0.75rem; border:1.5px solid var(--border); border-radius:10px; transition:0.2s; margin-top:0.6rem;
   }
+  [data-theme="dark"] .btn-outline{ background:#1e293b; color:#f8fafc; border-color:#334155; }
   .btn-outline:hover{ border-color:var(--primary); color:var(--primary);}
   .auth-footer{ margin-top:1.2rem; text-align:center; color:var(--muted); font-size:0.9rem;}
   .auth-footer a{ color:var(--primary); font-weight:700;}
   .msg{ margin-bottom:1rem; padding:0.75rem 1rem; border-radius:10px; font-size:0.92rem; font-weight:600; text-align:center; display:none;}
   .msg.error{ background:#fef2f2; color:#b91c1c; border:1px solid #fecaca;}
   .msg.success{ background:#f0fdf4; color:#15803d; border:1px solid #bbf7d0;}
+  [data-theme="dark"] .msg.error{ background:#7f1d1d; color:#fecaca; border-color:#991b1b; }
+  [data-theme="dark"] .msg.success{ background:#14532d; color:#bbf7d0; border-color:#166534; }
 
   /* ---------- App ---------- */
   .app{ display:none; }
@@ -129,6 +271,7 @@
     background:rgba(5,150,105,0.1); color:var(--primary-dark); font-weight:800; font-size:0.8rem;
     padding:0.25rem 0.7rem; border-radius:20px; display:inline-block; margin-top:0.35rem;
   }
+  [data-theme="dark"] .today-badge{ background:rgba(52,211,153,0.15); color:var(--success); }
 
   .grid{ display:grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap:1.2rem; margin-top:1rem;}
   .card{
@@ -140,37 +283,54 @@
     padding:1.1rem 1.2rem; border-bottom:1px solid var(--border); background:#f8fafc;
     display:flex; align-items:center; justify-content:space-between;
   }
+  [data-theme="dark"] .card-head{ background:#334155; border-color:#334155; }
   .card-head h3{ font-weight:800; font-size:1.05rem; color:var(--indigo); display:flex; align-items:center; gap:0.5rem;}
   .card-body{ padding:1.1rem 1.2rem; }
 
   .adhk-list{ display:flex; flex-direction:column; gap:0.6rem;}
   .adhk-item{
-    display:flex; align-items:center; gap:0.75rem; padding:0.6rem 0.8rem;
-    border-radius:10px; border:1px solid var(--border); background:#fff;
+    display:flex; align-items:center; gap:0.75rem; padding:0.8rem;
+    border-radius:12px; border:1px solid var(--border); background:#fff;
     transition:0.2s; font-size:0.95rem;
   }
+  [data-theme="dark"] .adhk-item{ background:#1e293b; border-color:#334155; }
   .adhk-item:hover{ border-color:var(--primary); background:#f0fdfa;}
+  [data-theme="dark"] .adhk-item:hover{ background:#0f172a; }
   .adhk-item.done{ border-color:var(--success); background:#f0fdf4;}
+  [data-theme="dark"] .adhk-item.done{ background:#064e3b; border-color:#10b981; }
   .adhk-item input{ width:20px; height:20px; accent-color:var(--primary); flex-shrink:0;}
-  .adhk-text{ flex:1; }
-  .adhk-count{
-    font-size:0.78rem; font-weight:800; background:#e2e8f0; color:var(--indigo);
-    padding:0.1rem 0.5rem; border-radius:8px; margin-left:0.4rem;
+  .adhk-text{ flex:1; line-height:1.6; }
+  .adhk-counter{
+    display:flex; align-items:center; gap:0.4rem; margin-left:0.5rem;
   }
-  .adhk-item.done .adhk-count{ background:#bbf7d0; color:#15803d;}
+  .adhk-count-btn{
+    width:28px; height:28px; border:1.5px solid var(--border); border-radius:8px;
+    font-weight:800; font-size:0.9rem; color:var(--text); background:var(--bg);
+    display:grid; place-items:center;
+  }
+  .adhk-count-btn:hover{ border-color:var(--primary); background:var(--primary); color:#fff;}
+  .adhk-count-display{
+    font-weight:800; color:var(--primary-dark); min-width:20px; text-align:center;
+  }
+  [data-theme="dark"] .adhk-count-display{ color:var(--success); }
   .adhk-cap{ font-size:0.78rem; color:var(--muted); margin-top:0.5rem; text-align:right; line-height:1.5;}
-  .empty-state{ text-align:center; color:var(--muted); padding:2rem; font-size:0.95rem;}
+  .adhk-reward{
+    font-size:0.75rem; font-weight:800; background:var(--primary); color:#fff;
+    padding:0.15rem 0.5rem; border-radius:8px; margin-left:auto;
+  }
+  .adhk-item.done .adhk-reward{ background:var(--success); }
 
   /* ---------- Tasbih ---------- */
   .tasbih-wrap{ display:flex; flex-direction:column; align-items:center; gap:1rem; padding:1.5rem 1.2rem 2rem;}
   .tasbih-circle{
     position:relative; width:220px; height:220px; border-radius:50%;
-    background:#fff; border:1px solid var(--border); box-shadow:var(--shadow-sm);
+    background:var(--card); border:1px solid var(--border); box-shadow:var(--shadow-sm);
     display:grid; place-items:center; margin-bottom:0.2rem;
   }
   .tasbih-count{
     font-weight:800; font-size:3rem; color:var(--indigo); line-height:1;
   }
+  [data-theme="dark"] .tasbih-count{ color:var(--success); }
   .tasbih-label{ color:var(--muted); font-size:0.85rem; font-weight:700; margin-top:0.2rem;}
   .beads{ position:absolute; inset:0; display:flex; justify-content:center; align-items:center; pointer-events:none;}
   .bead{
@@ -186,23 +346,54 @@
   }
   .tasbih-btn:active{ transform:scale(0.96);}
   .tasbih-btn.secondary{ background:#fff; color:var(--indigo); border:1.5px solid var(--border); box-shadow:none;}
+  [data-theme="dark"] .tasbih-btn.secondary{ background:#1e293b; color:#f8fafc; border-color:#334155; }
   .target-row{ margin-top:0.9rem; text-align:center; font-size:0.85rem; color:var(--muted);}
   .target-row input{ width:70px; padding:0.35rem; text-align:center; border:1px solid var(--border); border-radius:8px; font-family:inherit;}
   .celebration{ position:fixed; inset:0; display:none; align-items:center; justify-content:center;
-    font-weight:800; font-size:2.2rem; color:var(--success); z-index:60; background:rgba(255,255,255,0.85);
-    backdrop-filter: blur(6px); border-radius:0;}
+    font-weight:800; font-size:2.2rem; color:var(--success); z-index:60; background:rgba(255,255,255,0.9);
+    backdrop-filter: blur(6px); }
+  [data-theme="dark"] .celebration{ background:rgba(15,23,42,0.9); }
   .celebration.show{ display:flex;}
 
-  /* ---------- Notes ---------- */
+  /* ---------- Notes with Categories ---------- */
   .notes-wrap{ padding:1.5rem 1.2rem 2rem; }
+  .notes-categories{
+    display:flex; gap:0.5rem; margin-bottom:1rem; overflow-x:auto; padding-bottom:0.5rem;
+  }
+  .notes-cat-btn{
+    padding:0.5rem 1rem; border-radius:20px; font-weight:700; font-size:0.85rem;
+    border:1.5px solid var(--border); color:var(--muted); background:var(--bg);
+    white-space:nowrap; transition:0.2s;
+  }
+  .notes-cat-btn.active{
+    background:var(--primary); color:#fff; border-color:var(--primary);
+  }
+  [data-theme="dark"] .notes-cat-btn{ background:#1e293b; border-color:#334155; color:#94a3b8; }
+  [data-theme="dark"] .notes-cat-btn.active{ background:var(--primary); color:#fff; }
   .notes-textarea{
-    width:100%; min-height:260px; padding:1rem; border:1.5px solid var(--border);
+    width:100%; min-height:220px; padding:1rem; border:1.5px solid var(--border);
     border-radius:14px; font-family:inherit; font-size:1rem; color:var(--text);
     resize:vertical; outline:none; transition:0.2s;
   }
   .notes-textarea:focus{ border-color:var(--primary);}
   .notes-actions{ display:flex; gap:0.7rem; margin-top:0.9rem; justify-content:flex-end;}
   .notes-count{ margin-top:0.6rem; text-align:right; font-size:0.82rem; color:var(--muted);}
+
+  /* ---------- Daily Record ---------- */
+  .record-wrap{ padding:1.5rem 1.2rem 2rem; }
+  .record-empty{
+    text-align:center; color:var(--muted); padding:3rem 1rem; font-size:0.95rem;
+  }
+  .record-list{ display:flex; flex-direction:column; gap:0.8rem;}
+  .record-item{
+    background:var(--card); border:1px solid var(--border); border-radius:14px;
+    padding:1rem; display:flex; align-items:center; justify-content:space-between;
+  }
+  [data-theme="dark"] .record-item{ background:#1e293b; border-color:#334155; }
+  .record-date{ font-weight:800; color:var(--indigo); font-size:1rem;}
+  [data-theme="dark"] .record-date{ color:var(--success); }
+  .record-stats{ display:flex; gap:1rem; color:var(--muted); font-size:0.85rem;}
+  .record-stats span{ font-weight:700; color:var(--text);}
 
   /* ---------- Completed banner ---------- */
   .done-banner{
@@ -222,10 +413,33 @@
     .auth-card{ padding:1.8rem 1.2rem;}
     .tasbih-count{ font-size:2.2rem;}
     .tasbih-circle{ width:170px; height:170px;}
+    .datetime-bar{ flex-direction:column; align-items:flex-start; }
+    .islamic-border{ width:200px; height:200px; }
   }
 </style>
 </head>
 <body>
+
+<!-- Islamic Decorative Header -->
+<header class="islamic-header">
+  <div class="islamic-border"></div>
+  <div class="header-content">
+    <div class="site-logo">
+      <div class="mark">🤲</div>
+      أذكاري
+    </div>
+    <div class="site-tagline">أذكار الصباح والمساء — مسبحة — سجل أيام — ملاحظات شخصية</div>
+  </div>
+</header>
+
+<!-- Date & Time Bar -->
+<div class="datetime-bar">
+  <div class="datetime-info">
+    <div class="datetime-date" id="datetimeDate">السبت، ٣١ أكتوبر ٢٠٢٦</div>
+    <div class="datetime-time" id="datetimeTime">12:00:00 م</div>
+  </div>
+  <button class="theme-toggle" id="themeToggle" title="تغيير الوضع (ليلي/نهاري)">🌙</button>
+</div>
 
 <!-- ===================== AUTH ===================== -->
 <div id="authView" class="auth-wrap">
@@ -267,6 +481,7 @@
         <a href="#section-evening" class="nav-link" onclick="showSection('evening')">المساء</a>
         <a href="#section-tasbih" class="nav-link active" onclick="showSection('tasbih')">المسبحة</a>
         <a href="#section-notes" class="nav-link" onclick="showSection('notes')">ملاحظاتي</a>
+        <a href="#section-record" class="nav-link" onclick="showSection('record')">سجل أعمالي</a>
       </div>
       <div class="nav-user">
         <div class="user-badge" id="userBadge">المستخدم</div>
@@ -279,7 +494,7 @@
     <div class="app-top">
       <div class="welcome">
         <h1>نورت الموقع <span id="userName">صديقي</span> ☀️</h1>
-        <span class="today-badge" id="todayBadge">التاريخ: <span id="todayDate"></span></span>
+        <span class="today-badge" id="todayBadge">اليوم: <span id="todayDate"></span></span>
       </div>
     </div>
 
@@ -291,8 +506,8 @@
       </div>
       <div class="card-body">
         <div class="adhk-list" id="morningList"></div>
-        <div class="adhk-cap">الأذكار من كتاب «حصن المسلم».</div>
-        <div class="done-banner" id="morningDone">✅ أكملت أذكار الصباح! يمكنك الآن استخدام المسبحة.</div>
+        <div class="adhk-cap">الأذكار من كتاب «حصن المسلم». اضغط على العداد لتسجيل كل مرة تردد فيها الذكر.</div>
+        <div class="done-banner" id="morningDone">✅ أكملت أذكار الصباح! بارك الله فيك.</div>
       </div>
     </section>
 
@@ -304,8 +519,8 @@
       </div>
       <div class="card-body">
         <div class="adhk-list" id="eveningList"></div>
-        <div class="adhk-cap">الأذكار من كتاب «حصن المسلم».</div>
-        <div class="done-banner" id="eveningDone">✅ أكملت أذكار المساء! يمكنك الآن استخدام المسبحة.</div>
+        <div class="adhk-cap">الأذكار من كتاب «حصن المسلم». اضغط على العداد لتسجيل كل مرة تردد فيها الذكر.</div>
+        <div class="done-banner" id="eveningDone">✅ أكملت أذكار المساء! بارك الله فيك.</div>
       </div>
     </section>
 
@@ -335,13 +550,19 @@
       </div>
     </section>
 
-    <!-- Notes -->
+    <!-- Notes with Categories -->
     <section id="section-notes" class="card" style="display:none;">
       <div class="card-head">
         <h3>📝 ملاحظاتي</h3>
         <span>خاصة بك فقط</span>
       </div>
       <div class="notes-wrap">
+        <div class="notes-categories">
+          <button class="notes-cat-btn active" onclick="switchNoteCategory('general')">عام</button>
+          <button class="notes-cat-btn" onclick="switchNoteCategory('personal')">شخصي</button>
+          <button class="notes-cat-btn" onclick="switchNoteCategory('quotes')">أقوال وحكم</button>
+          <button class="notes-cat-btn" onclick="switchNoteCategory('tasks')">مهام ومواعيد</button>
+        </div>
         <textarea id="notes" class="notes-textarea" placeholder="اكتب ملاحظاتك الشخصية هنا..."></textarea>
         <div class="notes-actions">
           <button class="btn-primary" onclick="saveNotes()">حفظ الملاحظات</button>
@@ -349,14 +570,45 @@
         <div class="notes-count" id="notesCount">0 حرف</div>
       </div>
     </section>
+
+    <!-- Daily Record -->
+    <section id="section-record" class="card" style="display:none;">
+      <div class="card-head">
+        <h3>📅 سجل أعمالي</h3>
+        <span>أيامしました فيها الذكر</span>
+      </div>
+      <div class="record-wrap">
+        <div class="record-list" id="recordList"></div>
+        <div class="record-empty" id="recordEmpty" style="display:none;">لا توجد أيام مسجلة بعد. ابدأ بقراءة الأذكار لتسجيل أيامك.</div>
+      </div>
+    </section>
   </div>
 
   <footer>
-    موقع <strong>أذكاري</strong> — أذكار الصباح والمساء، مسبحة، وملاحظات خاصة. كل بياناتك محفوظة في متصفحك فقط.
+    موقع <strong>أذكاري</strong> — أذكار الصباح والمساء، مسبحة، سجل أيام، وملاحظات خاصة. كل بياناتك محفوظة في متصفحك فقط.
   </footer>
 </div>
 
 <script>
+  /* ================= THEME ================= */
+  const themeToggle = document.getElementById('themeToggle');
+  const savedTheme = localStorage.getItem('adhkari_theme') || 'light';
+  document.documentElement.setAttribute('data-theme', savedTheme);
+  updateThemeIcon(savedTheme);
+
+  themeToggle.addEventListener('click', () => {
+    const current = document.documentElement.getAttribute('data-theme');
+    const next = current === 'light' ? 'dark' : 'light';
+    document.documentElement.setAttribute('data-theme', next);
+    localStorage.setItem('adhkari_theme', next);
+    updateThemeIcon(next);
+  });
+
+  function updateThemeIcon(theme){
+    themeToggle.textContent = theme === 'light' ? '🌙' : '☀️';
+    themeToggle.title = theme === 'light' ? 'الوضع الليلي' : 'الوضع النهاري';
+  }
+
   /* ================= CONFIG & STORAGE ================= */
   const USERS_KEY = 'adhkari_users';
   const CURRENT_KEY = 'adhkari_currentUser';
@@ -365,40 +617,51 @@
   let currentUser = localStorage.getItem(CURRENT_KEY) || null;
   let userData = null;
 
-  const TODAY = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
+  const TODAY = new Date().toISOString().slice(0, 10);
 
   const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
   const todayStr = new Date().toLocaleDateString('ar-SA', options);
 
-  /* ================= ADHKAR DATA (authentic, from Fortress of the Muslim) ================= */
+  /* ================= DATE & TIME ================= */
+  function updateDateTime(){
+    const now = new Date();
+    const dateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+    document.getElementById('datetimeDate').textContent = now.toLocaleDateString('ar-SA', dateOptions);
+    document.getElementById('datetimeTime').textContent = now.toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    document.getElementById('todayDate').textContent = todayStr;
+  }
+  setInterval(updateDateTime, 1000);
+  updateDateTime();
+
+  /* ================= ADHKAR DATA (Complete from Fortress of the Muslim) ================= */
   const ADHKAR = {
     morning: [
-      { id: 'm1', text: 'أَصْبَحْنَا وَأَصْبَحَ الْمُلْكُ لِلَّهِ رَبِّ الْعَالَمِينَ، اللَّهُمَّ إِنِّي أَسْأَلُكَ خَيْرَ هَذَا الْيَوْمِ وَفَتْحَهُ وَنَصْرَهُ وَنُورَهُ وَبَرَكَتَهُ وَهُدَاهُ، وَأَعُوذُ بِكَ مِنْ شَرِّ مَا فِيهِ وَشَرِّ مَا بَعْدَهُ', count: null },
-      { id: 'm2', text: 'لَا إِلَٰهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ', count: 10 },
-      { id: 'm3', text: 'اللَّهُمَّ بِكَ أَصْبَحْنَا وَبِكَ أَمْسَيْنَا، وَبِكَ نَحْيَا وَبِكَ نَمُوتُ وَإِلَيْكَ الْمَصِيرُ', count: null },
-      { id: 'm4', text: 'اللَّهُمَّ مَا أَصْبَحَ بِي مِنْ نِعْمَةٍ أَوْ بِأَحَدٍ مِنْ خَلْقِكَ فَمِنْكَ وَحْدَكَ لَا شَرِيكَ لَكَ، فَلَكَ الْحَمْدُ وَلَكَ الشُّكْرُ', count: null },
-      { id: 'm5', text: 'رَضِيتُ بِاللَّهِ رَبًّا وَبِالْإِسْلَامِ دِينًا وَبِمُحَمَّدٍ نَبِيًّا', count: 3 },
-      { id: 'm6', text: 'اللَّهُمَّ عَافِنِي فِي بَدَنِي، اللَّهُمَّ عَافِنِي فِي سَمْعِي، اللَّهُمَّ عَافِنِي فِي بَصَرِي، لَا إِلَٰهَ إِلَّا أَنْتَ', count: 3 },
-      { id: 'm7', text: 'اللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنَ الْهَمِّ وَالْحَزَنِ، وَأَعُوذُ بِكَ مِنَ الْعَجْزِ وَالْكَسَلِ، وَأَعُوذُ بِكَ مِنَ الْبُخْلِ وَالْجُبْنِ، وَأَعُوذُ بِكَ مِنْ غَلَبَةِ الدَّيْنِ وَقَهْرِ الرِّجَال', count: null },
-      { id: 'm8', text: 'بِسْمِ اللَّهِ الَّذِي لَا يَضُرُّ مَعَ اسْمِهِ شَيْءٌ فِي الْأَرْضِ وَلَا فِي السَّمَاءِ وَهُوَ السَّمِيعُ الْعَلِيمُ', count: 3 },
-      { id: 'm9', text: 'آيَةُ الْكُرْسِي: اللَّهُ لَا إِلَٰهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ...', count: 1 },
-      { id: 'm10', text: 'قُلْ هُوَ اللَّهُ أَحَدٌ', count: 3 },
-      { id: 'm11', text: 'قُلْ أَعُوذُ بِرَبِّ الْفَلَقِ', count: 3 },
-      { id: 'm12', text: 'قُلْ أَعُوذُ بِرَبِّ النَّاسِ', count: 3 },
+      { id: 'm1', text: 'أَصْبَحْنَا وَأَصْبَحَ الْمُلْكُ لِلَّهِ رَبِّ الْعَالَمِينَ، اللَّهُمَّ إِنِّي أَسْأَلُكَ خَيْرَ هَذَا الْيَوْمِ وَفَتْحَهُ وَنَصْرَهُ وَنُورَهُ وَبَرَكَتَهُ وَهُدَاهُ، وَأَعُوذُ بِكَ مِنْ شَرِّ مَا فِيهِ وَشَرِّ مَا بَعْدَهُ', target: null, reward: null },
+      { id: 'm2', text: 'لَا إِلَٰهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ', target: 10, reward: '١٠ مرات' },
+      { id: 'm3', text: 'اللَّهُمَّ بِكَ أَصْبَحْنَا وَبِكَ أَمْسَيْنَا، وَبِكَ نَحْيَا وَبِكَ نَمُوتُ وَإِلَيْكَ الْمَصِيرُ', target: null, reward: null },
+      { id: 'm4', text: 'اللَّهُمَّ مَا أَصْبَحَ بِي مِنْ نِعْمَةٍ أَوْ بِأَحَدٍ مِنْ خَلْقِكَ فَمِنْكَ وَحْدَكَ لَا شَرِيكَ لَكَ، فَلَكَ الْحَمْدُ وَلَكَ الشُّكْرُ', target: null, reward: null },
+      { id: 'm5', text: 'رَضِيتُ بِاللَّهِ رَبًّا وَبِالْإِسْلَامِ دِينًا وَبِمُحَمَّدٍ نَبِيًّا', target: 3, reward: '٣ مرات' },
+      { id: 'm6', text: 'اللَّهُمَّ عَافِنِي فِي بَدَنِي، اللَّهُمَّ عَافِنِي فِي سَمْعِي، اللَّهُمَّ عَافِنِي فِي بَصَرِي، لَا إِلَٰهَ إِلَّا أَنْتَ', target: 3, reward: '٣ مرات' },
+      { id: 'm7', text: 'اللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنَ الْهَمِّ وَالْحَزَنِ، وَأَعُوذُ بِكَ مِنَ الْعَجْزِ وَالْكَسَلِ، وَأَعُوذُ بِكَ مِنَ الْبُخْلِ وَالْجُبْنِ، وَأَعُوذُ بِكَ مِنْ غَلَبَةِ الدَّيْنِ وَقَهْرِ الرِّجَال', target: null, reward: null },
+      { id: 'm8', text: 'بِسْمِ اللَّهِ الَّذِي لَا يَضُرُّ مَعَ اسْمِهِ شَيْءٌ فِي الْأَرْضِ وَلَا فِي السَّمَاءِ وَهُوَ السَّمِيعُ الْعَلِيمُ', target: 3, reward: '٣ مرات' },
+      { id: 'm9', text: 'آيَةُ الْكُرْسِي: اللَّهُ لَا إِلَٰهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ لَا تَأْخُذُهُ سِنَةٌ وَلَا نَوْمٌ لَهُ مَا فِي السَّمَاوَاتِ وَمَا فِي الْأَرْضِ مَنْ ذَا الَّذِي يَشْفَعُ عِنْدَهُ إِلَّا بِإِذْنِهِ يَعْلَمُ مَا بَيْنَ أَيْدِيهِمْ وَمَا خَلْفَهُمْ وَلَا يُحِيطُونَ بِشَيْءٍ مِنْ عِلْمِهِ إِلَّا بِمَا شَاءَ وَسِعَ كُرْسِيُّهُ السَّمَاوَاتِ وَالْأَرْضَ وَلَا يَؤُودُهُ حِفْظُهُمَا وَهُوَ الْعَلِيُّ الْعَظِيمُ', target: 1, reward: 'مرة واحدة' },
+      { id: 'm10', text: 'قُلْ هُوَ اللَّهُ أَحَدٌ، اللَّهُ الصَّمَدُ، لَمْ يَلِدْ وَلَمْ يُولَدْ، وَلَمْ يَكُن لَّهُ كُفُوًا أَحَدٌ', target: 3, reward: '٣ مرات' },
+      { id: 'm11', text: 'قُلْ أَعُوذُ بِرَبِّ الْفَلَقِ، مِنْ شَرِّ مَا خَلَقَ، وَمِنْ شَرِّ غَاسِقٍ إِذَا وَقَبَ، وَمِنْ شَرِّ النَّفَّاثَاتِ فِي الْعُقَدِ، وَمِنْ شَرِّ حَاسِدٍ إِذَا حَسَدَ', target: 3, reward: '٣ مرات' },
+      { id: 'm12', text: 'قُلْ أَعُوذُ بِرَبِّ النَّاسِ، مَلِكِ النَّاسِ، إِلَهِ النَّاسِ، مِنْ شَرِّ الْوَسْوَاسِ الْخَنَّاسِ، الَّذِي يُوَسْوِسُ فِي صُدُورِ النَّاسِ، مِنَ الْجِنَّةِ وَالنَّاسِ', target: 3, reward: '٣ مرات' },
     ],
     evening: [
-      { id: 'e1', text: 'أَمْسَيْنَا وَأَمْسَى الْمُلْكُ لِلَّهِ رَبِّ الْعَالَمِينَ، اللَّهُمَّ إِنِّي أَسْأَلُكَ خَيْرَ هَذِهِ اللَّيْلَةِ وَفَتْحَهَا وَنَصْرَهَا وَنُورَهَا وَبَرَكَتَهَا وَهُدَاهَا، وَأَعُوذُ بِكَ مِنْ شَرِّ مَا فِيهَا وَشَرِّ مَا بَعْدَهَا', count: null },
-      { id: 'e2', text: 'لَا إِلَٰهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ', count: 10 },
-      { id: 'e3', text: 'اللَّهُمَّ بِكَ أَمْسَيْنَا وَبِكَ نَصْبَحْنَا، وَبِكَ نَحْيَا وَبِكَ نَمُوتُ وَإِلَيْكَ الْمَصِيرُ', count: null },
-      { id: 'e4', text: 'اللَّهُمَّ مَا أَمْسَى بِي مِنْ نِعْمَةٍ أَوْ بِأَحَدٍ مِنْ خَلْقِكَ فَمِنْكَ وَحْدَكَ لَا شَرِيكَ لَكَ، فَلَكَ الْحَمْدُ وَلَكَ الشُّكْرُ', count: null },
-      { id: 'e5', text: 'رَضِيتُ بِاللَّهِ رَبًّا وَبِالْإِسْلَامِ دِينًا وَبِمُحَمَّدٍ نَبِيًّا', count: 3 },
-      { id: 'e6', text: 'اللَّهُمَّ عَافِنِي فِي بَدَنِي، اللَّهُمَّ عَافِنِي فِي سَمْعِي، اللَّهُمَّ عَافِنِي فِي بَصَرِي، لَا إِلَٰهَ إِلَّا أَنْتَ', count: 3 },
-      { id: 'e7', text: 'اللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنَ الْهَمِّ وَالْحَزَنِ، وَأَعُوذُ بِكَ مِنَ الْعَجْزِ وَالْكَسَلِ، وَأَعُوذُ بِكَ مِنَ الْبُخْلِ وَالْجُبْنِ، وَأَعُوذُ بِكَ مِنْ غَلَبَةِ الدَّيْنِ وَقَهْرِ الرِّجَال', count: null },
-      { id: 'e8', text: 'بِسْمِ اللَّهِ الَّذِي لَا يَضُرُّ مَعَ اسْمِهِ شَيْءٌ فِي الْأَرْضِ وَلَا فِي السَّمَاءِ وَهُوَ السَّمِيعُ الْعَلِيمُ', count: 3 },
-      { id: 'e9', text: 'آيَةُ الْكُرْسِي: اللَّهُ لَا إِلَٰهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ...', count: 1 },
-      { id: 'e10', text: 'قُلْ هُوَ اللَّهُ أَحَدٌ', count: 3 },
-      { id: 'e11', text: 'قُلْ أَعُوذُ بِرَبِّ الْفَلَقِ', count: 3 },
-      { id: 'e12', text: 'قُلْ أَعُوذُ بِرَبِّ النَّاسِ', count: 3 },
+      { id: 'e1', text: 'أَمْسَيْنَا وَأَمْسَى الْمُلْكُ لِلَّهِ رَبِّ الْعَالَمِينَ، اللَّهُمَّ إِنِّي أَسْأَلُكَ خَيْرَ هَذِهِ اللَّيْلَةِ وَفَتْحَهَا وَنَصْرَهَا وَنُورَهَا وَبَرَكَتَهَا وَهُدَاهَا، وَأَعُوذُ بِكَ مِنْ شَرِّ مَا فِيهَا وَشَرِّ مَا بَعْدَهَا', target: null, reward: null },
+      { id: 'e2', text: 'لَا إِلَٰهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ', target: 10, reward: '١٠ مرات' },
+      { id: 'e3', text: 'اللَّهُمَّ بِكَ أَمْسَيْنَا وَبِكَ نَصْبَحْنَا، وَبِكَ نَحْيَا وَبِكَ نَمُوتُ وَإِلَيْكَ الْمَصِيرُ', target: null, reward: null },
+      { id: 'e4', text: 'اللَّهُمَّ مَا أَمْسَى بِي مِنْ نِعْمَةٍ أَوْ بِأَحَدٍ مِنْ خَلْقِكَ فَمِنْكَ وَحْدَكَ لَا شَرِيكَ لَكَ، فَلَكَ الْحَمْدُ وَلَكَ الشُّكْرُ', target: null, reward: null },
+      { id: 'e5', text: 'رَضِيتُ بِاللَّهِ رَبًّا وَبِالْإِسْلَامِ دِينًا وَبِمُحَمَّدٍ نَبِيًّا', target: 3, reward: '٣ مرات' },
+      { id: 'e6', text: 'اللَّهُمَّ عَافِنِي فِي بَدَنِي، اللَّهُمَّ عَافِنِي فِي سَمْعِي، اللَّهُمَّ عَافِنِي فِي بَصَرِي، لَا إِلَٰهَ إِلَّا أَنْتَ', target: 3, reward: '٣ مرات' },
+      { id: 'e7', text: 'اللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنَ الْهَمِّ وَالْحَزَنِ، وَأَعُوذُ بِكَ مِنَ الْعَجْزِ وَالْكَسَلِ، وَأَعُوذُ بِكَ مِنَ الْبُخْلِ وَالْجُبْنِ، وَأَعُوذُ بِكَ مِنْ غَلَبَةِ الدَّيْنِ وَقَهْرِ الرِّجَال', target: null, reward: null },
+      { id: 'e8', text: 'بِسْمِ اللَّهِ الَّذِي لَا يَضُرُّ مَعَ اسْمِهِ شَيْءٌ فِي الْأَرْضِ وَلَا فِي السَّمَاءِ وَهُوَ السَّمِيعُ الْعَلِيمُ', target: 3, reward: '٣ مرات' },
+      { id: 'e9', text: 'آيَةُ الْكُرْسِي: اللَّهُ لَا إِلَٰهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ لَا تَأْخُذُهُ سِنَةٌ وَلَا نَوْمٌ لَهُ مَا فِي السَّمَاوَاتِ وَمَا فِي الْأَرْضِ مَنْ ذَا الَّذِي يَشْفَعُ عِنْدَهُ إِلَّا بِإِذْنِهِ يَعْلَمُ مَا بَيْنَ أَيْدِيهِمْ وَمَا خَلْفَهُمْ وَلَا يُحِيطُونَ بِشَيْءٍ مِنْ عِلْمِهِ إِلَّا بِمَا شَاءَ وَسِعَ كُرْسِيُّهُ السَّمَاوَاتِ وَالْأَرْضَ وَلَا يَؤُودُهُ حِفْظُهُمَا وَهُوَ الْعَلِيُّ الْعَظِيمُ', target: 1, reward: 'مرة واحدة' },
+      { id: 'e10', text: 'قُلْ هُوَ اللَّهُ أَحَدٌ، اللَّهُ الصَّمَدُ، لَمْ يَلِدْ وَلَمْ يُولَدْ، وَلَمْ يَكُن لَّهُ كُفُوًا أَحَدٌ', target: 3, reward: '٣ مرات' },
+      { id: 'e11', text: 'قُلْ أَعُوذُ بِرَبِّ الْفَلَقِ، مِنْ شَرِّ مَا خَلَقَ، وَمِنْ شَرِّ غَاسِقٍ إِذَا وَقَبَ، وَمِنْ شَرِّ النَّفَّاثَاتِ فِي الْعُقَدِ، وَمِنْ شَرِّ حَاسِدٍ إِذَا حَسَدَ', target: 3, reward: '٣ مرات' },
+      { id: 'e12', text: 'قُلْ أَعُوذُ بِرَبِّ النَّاسِ، مَلِكِ النَّاسِ، إِلَهِ النَّاسِ، مِنْ شَرِّ الْوَسْوَاسِ الْخَنَّاسِ، الَّذِي يُوَسْوِسُ فِي صُدُورِ النَّاسِ، مِنَ الْجِنَّةِ وَالنَّاسِ', target: 3, reward: '٣ مرات' },
     ]
   };
 
@@ -413,16 +676,20 @@
       document.getElementById('authView').style.display = 'flex';
       document.getElementById('appView').style.display = 'none';
     }
-    document.getElementById('todayDate').textContent = todayStr;
   }
 
   function loadUserData(email){
     let d = JSON.parse(localStorage.getItem('adhkari_' + email) || '{}');
     if(!d.tasbih) d.tasbih = 0;
-    if(!d.notes) d.notes = '';
+    if(!d.notes) d.notes = { general: '', personal: '', quotes: '', tasks: '' };
+    if(!d.notes.general) d.notes.general = '';
+    if(!d.notes.personal) d.notes.personal = '';
+    if(!d.notes.quotes) d.notes.quotes = '';
+    if(!d.notes.tasks) d.notes.tasks = '';
     if(!d.adhkar) d.adhkar = {};
-    if(!d.adhkar.morning) d.adhkar.morning = { date:'', doneItems:{}, completed:false };
-    if(!d.adhkar.evening) d.adhkar.evening = { date:'', doneItems:{}, completed:false };
+    if(!d.adhkar.morning) d.adhkar.morning = { date:'', counts:{}, completed:false };
+    if(!d.adhkar.evening) d.adhkar.evening = { date:'', counts:{}, completed:false };
+    if(!d.records) d.records = [];
     resetDayIfNeeded(d.adhkar.morning);
     resetDayIfNeeded(d.adhkar.evening);
     return d;
@@ -430,7 +697,7 @@
   function resetDayIfNeeded(session){
     if(session.date !== TODAY){
       session.date = TODAY;
-      session.doneItems = {};
+      session.counts = {};
       session.completed = false;
     }
   }
@@ -446,13 +713,11 @@
     tabs.forEach(t => t.classList.remove('active'));
     tabs[tab === 'login' ? 0 : 1].classList.add('active');
     if(tab === 'login'){
-      tabs[0].classList.add('active');
       submit.textContent = 'تسجيل الدخول';
       altBtn.textContent = 'ليس لديك حساب؟ أنشئ حساباً جديداً';
       altBtn.onclick = () => switchAuthTab('signup');
       form.onsubmit = handleAuth;
     } else {
-      tabs[1].classList.add('active');
       submit.textContent = 'إنشاء حساب';
       altBtn.textContent = 'لديك حساب بالفعل؟ تسجيل الدخول';
       altBtn.onclick = () => switchAuthTab('login');
@@ -460,7 +725,6 @@
     }
     hideMsg();
   }
-  // Make switchAuthTab callable without event
   window.switchAuthTab = switchAuthTab;
 
   function handleAuth(e){
@@ -516,25 +780,40 @@
   function renderApp(){
     document.getElementById('userBadge').textContent = currentUser;
     document.getElementById('userName').textContent = currentUser.split('@')[0];
-    document.getElementById('todayDate').textContent = todayStr;
 
     renderSection('morning');
     renderSection('evening');
     renderTasbih();
     renderNotes();
+    renderRecord();
 
-    showSection('tasbih'); // default view
+    showSection('tasbih');
   }
 
   function showSection(section){
     document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
     document.querySelectorAll('section[id^="section-"]').forEach(s => s.style.display = 'none');
     document.getElementById('section-' + section).style.display = 'block';
-    // activate nav link by text mapping
-    const map = {'morning':'الصباح','evening':'المساء','tasbih':'المسبحة','notes':'ملاحظاتي'};
+    const map = {'morning':'الصباح','evening':'المساء','tasbih':'المسبحة','notes':'ملاحظاتي','record':'سجل أعمالي'};
     document.querySelectorAll('.nav-links a').forEach(a=>{
       if(a.textContent.trim() === map[section]) a.classList.add('active');
     });
+  }
+
+  /* Check if any adhkar counter reached target for today */
+  function checkSessionCompleted(type){
+    const session = userData.adhkar[type];
+    const items = ADHKAR[type];
+    let allDone = true;
+    items.forEach(it => {
+      if(it.target !== null){
+        const count = session.counts[it.id] || 0;
+        if(count < it.target) allDone = false;
+      }
+    });
+    session.completed = allDone;
+    saveUserData();
+    return allDone;
   }
 
   function renderSection(type){
@@ -543,31 +822,55 @@
     const doneBanner = document.getElementById(type + 'Done');
     const session = userData.adhkar[type];
     const items = ADHKAR[type];
-    let doneCount = 0;
 
     listEl.innerHTML = '';
+    let completedCount = 0;
+
     items.forEach(it => {
-      const isDone = !!session.doneItems[it.id];
-      if(isDone) doneCount++;
+      const count = session.counts[it.id] || 0;
+      const isDone = it.target !== null ? count >= it.target : count > 0;
+      if(isDone) completedCount++;
+
       const item = document.createElement('div');
       item.className = 'adhk-item' + (isDone ? ' done' : '');
+
+      let targetHtml = '';
+      if(it.target !== null){
+        targetHtml = `
+          <div class="adhk-counter">
+            <button class="adhk-count-btn" onclick="adhkCount('${type}', '${it.id}', -1)">−</button>
+            <span class="adhk-count-display">${count}</span>
+            <button class="adhk-count-btn" onclick="adhkCount('${type}', '${it.id}', 1)">+</button>
+            <span class="adhk-reward">${it.target}×</span>
+          </div>
+        `;
+      }
+
       item.innerHTML = `
-        <input type="checkbox" ${isDone ? 'checked' : ''} onchange="toggleAdhk('${type}', '${it.id}')">
         <div class="adhk-text">${it.text}</div>
-        ${it.count ? `<span class="adhk-count">${it.count}×</span>` : ''}
+        ${targetHtml}
       `;
       listEl.appendChild(item);
     });
-    progressEl.textContent = doneCount + ' / ' + items.length;
-    session.completed = (doneCount === items.length);
-    doneBanner.className = 'done-banner' + (session.completed ? ' show' : '');
+
+    progressEl.textContent = completedCount + ' / ' + items.length;
+    const allCompleted = checkSessionCompleted(type);
+    doneBanner.className = 'done-banner' + (allCompleted ? ' show' : '');
     saveUserData();
+
+    // Add to daily record if any adhkar was done today
+    if(completedCount > 0){
+      addToDailyRecord(type, completedCount);
+    }
   }
 
-  function toggleAdhk(type, id){
+  function adhkCount(type, id, delta){
     const session = userData.adhkar[type];
-    session.doneItems[id] = !session.doneItems[id];
+    const item = ADHKAR[type].find(x => x.id === id);
+    if(!item) return;
+    session.counts[id] = Math.max(0, (session.counts[id] || 0) + delta);
     renderSection(type);
+    if(delta > 0) navigator.vibrate && navigator.vibrate(30);
   }
 
   /* ================= TASBIH ================= */
@@ -581,7 +884,6 @@
     tasbihTarget = parseInt(targetInput.value) || 33;
     targetEl.textContent = 'الهدف: ' + tasbihTarget;
 
-    // render beads circle
     beadsEl.innerHTML = '';
     const n = tasbihTarget;
     const radius = 78;
@@ -631,16 +933,78 @@
   window.tasbihSet = tasbihSet;
   window.saveTasbihTarget = saveTasbihTarget;
 
-  /* ================= NOTES ================= */
+  /* ================= DAILY RECORD ================= */
+  function addToDailyRecord(type, count){
+    // Avoid duplicate for same day
+    const existing = userData.records.find(r => r.date === TODAY);
+    if(existing){
+      if(type === 'morning') existing.morningCount = count;
+      if(type === 'evening') existing.eveningCount = count;
+    } else {
+      userData.records.push({
+        date: TODAY,
+        dateStr: todayStr,
+        morningCount: type === 'morning' ? count : 0,
+        eveningCount: type === 'evening' ? count : 0,
+        tasbih: userData.tasbih
+      });
+    }
+    saveUserData();
+    renderRecord();
+  }
+
+  function renderRecord(){
+    const listEl = document.getElementById('recordList');
+    const emptyEl = document.getElementById('recordEmpty');
+    const records = userData.records || [];
+
+    if(records.length === 0){
+      listEl.style.display = 'none';
+      emptyEl.style.display = 'block';
+      return;
+    }
+
+    listEl.style.display = 'flex';
+    emptyEl.style.display = 'none';
+    listEl.innerHTML = '';
+
+    [...records].reverse().forEach(rec => {
+      const item = document.createElement('div');
+      item.className = 'record-item';
+      const total = (rec.morningCount||0) + (rec.eveningCount||0);
+      item.innerHTML = `
+        <div class="record-date">${rec.dateStr}</div>
+        <div class="record-stats">
+          <span>صباح: ${rec.morningCount||0}</span>
+          <span>مساء: ${rec.eveningCount||0}</span>
+          <span>مسبحة: ${rec.tasbih||0}</span>
+          <span>الإجمالي: ${total}</span>
+        </div>
+      `;
+      listEl.appendChild(item);
+    });
+  }
+
+  /* ================= NOTES WITH CATEGORIES ================= */
+  let currentNoteCategory = 'general';
+  function switchNoteCategory(cat){
+    currentNoteCategory = cat;
+    document.querySelectorAll('.notes-cat-btn').forEach(b => b.classList.remove('active'));
+    event.target.classList.add('active');
+    renderNotes();
+  }
+  window.switchNoteCategory = switchNoteCategory;
+
   function renderNotes(){
     const ta = document.getElementById('notes');
-    ta.value = userData.notes || '';
-    document.getElementById('notesCount').textContent = (userData.notes || '').length + ' حرف';
+    ta.value = userData.notes[currentNoteCategory] || '';
+    document.getElementById('notesCount').textContent = (userData.notes[currentNoteCategory] || '').length + ' حرف';
   }
+
   let notesDebounce;
   document.getElementById('notes').addEventListener('input', (e)=>{
-    userData.notes = e.target.value;
-    document.getElementById('notesCount').textContent = userData.notes.length + ' حرف';
+    userData.notes[currentNoteCategory] = e.target.value;
+    document.getElementById('notesCount').textContent = userData.notes[currentNoteCategory].length + ' حرف';
     clearTimeout(notesDebounce);
     notesDebounce = setTimeout(saveUserData, 800);
   });
